@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToS Lens - Dashboard Analítico</title>
+    
+    <!-- Google Fonts: Inter (UI) and Fira Code (JSON Input) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Config for Custom Brand Colors -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        dark: {
+                            bg: '#05050A',       // Very deep dark background
+                            panel: '#0B0F19',    // Slightly lighter for main panels
+                            card: '#131B2F',     // Card background
+                            border: '#1E293B'    // Subtle border
+                        },
+                        brand: {
+                            violet: '#8B5CF6',   // Primary accent (Violet)
+                            cyan: '#06B6D4',     // Secondary accent (Cyan)
+                            glow: 'rgba(139, 92, 246, 0.15)'
+                        }
+                    },
+                    boxShadow: {
+                        'neon': '0 0 15px rgba(139, 92, 246, 0.3)',
+                        'neon-cyan': '0 0 15px rgba(6, 182, 212, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E293B; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8B5CF6; 
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(to right, #8B5CF6, #06B6D4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Subtle glowing background effects */
+        .bg-glow-violet {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(0,0,0,0) 70%);
+            top: -20%;
+            left: -10%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .bg-glow-cyan {
+            position: absolute;
+            width: 30vw;
+            height: 30vw;
+            background: radial-gradient(circle, rgba(6,182,212,0.1) 0%, rgba(0,0,0,0) 70%);
+            bottom: -10%;
+            right: -10%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-gray-300 font-sans antialiased min-h-screen overflow-x-hidden relative flex flex-col">
+
+    <!-- Ambient Background Glows -->
+    <div class="bg-glow-violet"></div>
+    <div class="bg-glow-cyan"></div>
+
+    <!-- Header -->
+    <header class="relative z-10 border-b border-dark-border bg-dark-bg/80 backdrop-blur-md sticky top-0">
+        <div class="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-dark-card p-2 rounded-xl border border-dark-border shadow-neon">
+                    <i data-lucide="scan-line" class="text-brand-cyan w-5 h-5"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight text-white">
+                    ToS <span class="text-gradient">Lens</span>
+                </h1>
+            </div>
+            <div class="hidden sm:flex items-center gap-2 text-xs font-medium text-brand-violet bg-brand-violet/10 px-3 py-1.5 rounded-full border border-brand-violet/20">
+                <i data-lucide="zap" class="w-3.5 h-3.5 fill-current"></i> Visualizador IA
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="relative z-10 flex-grow w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        <!-- Left Panel: Input Area (4 columns wide on lg) -->
+        <section class="lg:col-span-4 flex flex-col h-full bg-dark-panel rounded-2xl border border-dark-border shadow-lg overflow-hidden">
+            <div class="p-4 border-b border-dark-border flex justify-between items-center bg-dark-card/50">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="brackets" class="w-4 h-4 text-brand-violet"></i>
+                    <h2 class="text-sm font-semibold text-gray-200">Entrada JSON</h2>
+                </div>
+                <button id="loadExampleBtn" class="text-xs text-brand-cyan hover:text-white transition-colors flex items-center gap-1">
+                    <i data-lucide="file-json" class="w-3 h-3"></i> Cargar Ejemplo
+                </button>
+            </div>
+            
+            <div class="flex-grow p-4 flex flex-col gap-4 relative">
+                <label for="jsonInput" class="sr-only">Pegar JSON</label>
+                <textarea id="jsonInput" spellcheck="false" placeholder="Pegue aquí el JSON generado por la IA..."
+                    class="w-full h-full min-h-[300px] bg-dark-bg border border-dark-border rounded-xl p-4 font-mono text-sm text-gray-300 focus:outline-none focus:ring-1 focus:ring-brand-violet focus:border-brand-violet transition-all resize-none shadow-inner"></textarea>
+                
+                <!-- Error Message -->
+                <div id="errorMsg" class="hidden flex items-start gap-2 bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-3 rounded-lg animate-fade-in">
+                    <i data-lucide="shield-alert" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+                    <span id="errorText">Error de formato JSON.</span>
+                </div>
+
+                <button id="generateBtn"
+                    class="w-full group relative flex justify-center items-center gap-2 py-3.5 px-4 border border-brand-violet/50 rounded-xl text-white font-medium bg-brand-violet/10 hover:bg-brand-violet hover:shadow-neon transition-all overflow-hidden">
+                    <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>Generar Reporte de ToS</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Right Panel: Dashboard Result (8 columns wide on lg) -->
+        <section class="lg:col-span-8 flex flex-col h-full bg-dark-panel rounded-2xl border border-dark-border shadow-xl overflow-hidden relative min-h-[600px]">
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 p-8 text-center bg-dark-bg/50">
+                <div class="w-20 h-20 bg-dark-card rounded-full flex items-center justify-center mb-4 border border-dark-border shadow-lg">
+                    <i data-lucide="layers" class="w-10 h-10 text-dark-border"></i>
+                </div>
+                <h3 class="text-xl font-medium text-gray-400 mb-2">Esperando datos</h3>
+                <p class="text-sm max-w-md">Pegue el objeto JSON devuelto por la IA en el panel izquierdo y haga clic en generar para visualizar el análisis estructurado.</p>
+            </div>
+
+            <!-- Active Dashboard (Hidden initially) -->
+            <div id="dashboard" class="hidden flex flex-col h-full overflow-y-auto w-full animate-fade-in">
+                
+                <!-- Dashboard Header -->
+                <div class="bg-dark-card/80 p-6 border-b border-dark-border flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-mono text-brand-violet mb-1 uppercase tracking-wider">Identificador de Análisis</p>
+                        <h2 id="caseIdTitle" class="text-3xl font-bold text-white flex items-center gap-3">
+                            <i data-lucide="fingerprint" class="w-7 h-7 text-brand-cyan"></i>
+                            <span id="dashCaseId">---</span>
+                        </h2>
+                    </div>
+                    
+                    <!-- Status Badge -->
+                    <div id="statusBadge" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium self-start backdrop-blur-sm">
+                        <i id="statusIcon" data-lucide="circle-dot" class="w-4 h-4"></i>
+                        <span id="statusText">Estado</span>
+                    </div>
+                </div>
+
+                <!-- Dashboard Content -->
+                <div class="p-6 flex-grow flex flex-col gap-6">
+                    
+                    <!-- Top Cards Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Card: Resumen -->
+                        <div class="bg-dark-card border border-dark-border rounded-xl p-5 hover:border-brand-violet/50 transition-colors group">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="bg-brand-violet/20 p-2 rounded-lg text-brand-violet group-hover:scale-110 transition-transform">
+                                    <i data-lucide="align-left" class="w-5 h-5"></i>
+                                </div>
+                                <h3 class="font-semibold text-gray-200">Resumen General</h3>
+                            </div>
+                            <p id="dashResumen" class="text-sm text-gray-400 leading-relaxed"></p>
+                        </div>
+
+                        <!-- Card: Privacidad -->
+                        <div class="bg-dark-card border border-dark-border rounded-xl p-5 hover:border-brand-cyan/50 transition-colors group">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="bg-brand-cyan/20 p-2 rounded-lg text-brand-cyan group-hover:scale-110 transition-transform">
+                                    <i data-lucide="eye-off" class="w-5 h-5"></i>
+                                </div>
+                                <h3 class="font-semibold text-gray-200">Privacidad y Datos</h3>
+                            </div>
+                            <p id="dashPrivacidad" class="text-sm text-gray-400 leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <!-- Card: Derechos del Usuario (Full width) -->
+                    <div class="bg-dark-card border border-dark-border rounded-xl p-5 hover:border-indigo-500/50 transition-colors group">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="bg-indigo-500/20 p-2 rounded-lg text-indigo-400 group-hover:scale-110 transition-transform">
+                                <i data-lucide="scale" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="font-semibold text-gray-200">Derechos del Usuario</h3>
+                        </div>
+                        <p id="dashDerechos" class="text-sm text-gray-400 leading-relaxed"></p>
+                    </div>
+
+                    <!-- Evidencias Section -->
+                    <div class="mt-2">
+                        <h3 class="flex items-center gap-2 text-sm font-medium text-gray-300 mb-4 border-b border-dark-border pb-2">
+                            <i data-lucide="quote" class="w-4 h-4 text-brand-violet"></i> Extractos Literales (Evidencia)
+                        </h3>
+                        <div id="evidenciasContainer" class="space-y-3">
+                            <!-- Evidencias will be injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Advertencias Section (Hidden by default) -->
+                    <div id="advertenciasPanel" class="hidden mt-4 border border-rose-500/30 bg-rose-500/5 rounded-xl overflow-hidden">
+                        <div class="bg-rose-500/10 px-5 py-3 border-b border-rose-500/20 flex items-center gap-2">
+                            <i data-lucide="triangle-alert" class="w-5 h-5 text-rose-400"></i>
+                            <h3 class="font-semibold text-rose-400">Advertencias o Contradicciones</h3>
+                        </div>
+                        <div class="p-5">
+                            <ul id="advertenciasList" class="space-y-3 text-sm text-rose-200/80">
+                                <!-- Warning list items injected here -->
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer Legal Disclaimer -->
+                <div class="mt-auto bg-dark-card border-t border-dark-border p-4">
+                    <div class="flex items-center justify-center gap-2 text-xs text-gray-500">
+                        <i data-lucide="scale-3d" class="w-4 h-4"></i>
+                        <span>⚠️ Este análisis es generado por IA (<span id="asesoriaStatus"></span>) y no constituye asesoría legal profesional.</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Tailwind custom animation utility definition -->
+    <style>
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+    </style>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // DOM Elements
+        const jsonInput = document.getElementById('jsonInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const loadExampleBtn = document.getElementById('loadExampleBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const errorText = document.getElementById('errorText');
+        
+        const emptyState = document.getElementById('emptyState');
+        const dashboard = document.getElementById('dashboard');
+
+        // Dashboard Elements
+        const dashCaseId = document.getElementById('dashCaseId');
+        const statusBadge = document.getElementById('statusBadge');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+        
+        const dashResumen = document.getElementById('dashResumen');
+        const dashPrivacidad = document.getElementById('dashPrivacidad');
+        const dashDerechos = document.getElementById('dashDerechos');
+        
+        const evidenciasContainer = document.getElementById('evidenciasContainer');
+        const advertenciasPanel = document.getElementById('advertenciasPanel');
+        const advertenciasList = document.getElementById('advertenciasList');
+        const asesoriaStatus = document.getElementById('asesoriaStatus');
+
+        // Example JSON Payload
+        const exampleJSON = {
+            "id_caso": "TOS-XAPP-094",
+            "estado": "respondido",
+            "resumen": "El fragmento establece que la plataforma recopila datos exhaustivos del dispositivo y comportamiento, usándolos para fines publicitarios. Los usuarios ceden licencias globales sobre su contenido.",
+            "privacidad": "Recopila metadata, ubicación exacta y patrones de uso. Los datos se comparten con 'socios comerciales' no especificados para crear perfiles publicitarios dirigidos.",
+            "derechos_usuario": "El usuario conserva la propiedad intelectual de sus publicaciones, pero otorga una licencia irrevocable y transferible a la plataforma. No se menciona el proceso para eliminar la cuenta de forma definitiva.",
+            "evidencias": [
+                "Al usar el Servicio, usted nos otorga una licencia mundial, libre de regalías, sublicenciable e irrevocable para usar, copiar, reproducir y distribuir su Contenido.",
+                "Podemos recopilar información sobre su ubicación precisa y compartirla con terceros para mostrar anuncios relevantes."
+            ],
+            "advertencias": [
+                "Cláusula abusiva detectada: Licencia irrevocable sobre contenido de usuario.",
+                "Contradicción: Afirma proteger la privacidad pero permite compartir ubicación exacta con terceros sin especificar el mecanismo de exclusión."
+            ],
+            "asesoria_legal": false
+        };
+
+        // Load Example
+        loadExampleBtn.addEventListener('click', () => {
+            jsonInput.value = JSON.stringify(exampleJSON, null, 4);
+            errorMsg.classList.add('hidden');
+        });
+
+        // Generate Report
+        generateBtn.addEventListener('click', () => {
+            const rawValue = jsonInput.value.trim();
+            errorMsg.classList.add('hidden');
+
+            if (!rawValue) {
+                showError("Por favor, ingrese un JSON en el área de texto.");
+                return;
+            }
+
+            try {
+                const data = JSON.parse(rawValue);
+                
+                // Basic validation of expected structure
+                if (!data.id_caso || !data.estado) {
+                    throw new Error("El JSON no tiene la estructura requerida (faltan id_caso o estado).");
+                }
+
+                renderDashboard(data);
+
+            } catch (e) {
+                showError(`Error al procesar: ${e.message}`);
+                // Revert to empty state
+                dashboard.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            }
+        });
+
+        function showError(message) {
+            errorText.textContent = message;
+            errorMsg.classList.remove('hidden');
+        }
+
+        function renderDashboard(data) {
+            // 1. Title / Case ID
+            dashCaseId.textContent = data.id_caso || 'ID DESCONOCIDO';
+
+            // 2. Status Badge Logic
+            const state = (data.estado || '').toLowerCase();
+            statusBadge.className = 'inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium self-start backdrop-blur-sm transition-all'; // Reset classes
+            
+            if (state === 'respondido') {
+                statusBadge.classList.add('bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/30');
+                statusIcon.setAttribute('data-lucide', 'check-circle-2');
+                statusText.textContent = 'Análisis Completado';
+            } else if (state === 'informacion_insuficiente') {
+                statusBadge.classList.add('bg-amber-500/10', 'text-amber-400', 'border-amber-500/30');
+                statusIcon.setAttribute('data-lucide', 'help-circle');
+                statusText.textContent = 'Información Insuficiente';
+            } else if (state === 'abstencion') {
+                statusBadge.classList.add('bg-rose-500/10', 'text-rose-400', 'border-rose-500/30');
+                statusIcon.setAttribute('data-lucide', 'slash');
+                statusText.textContent = 'Abstención (Contradicción)';
+            } else {
+                statusBadge.classList.add('bg-gray-500/10', 'text-gray-400', 'border-gray-500/30');
+                statusIcon.setAttribute('data-lucide', 'file-question');
+                statusText.textContent = state || 'Estado Desconocido';
+            }
+
+            // 3. Text Cards (Handle empty/null gracefully)
+            dashResumen.textContent = data.resumen || 'No especificado en el fragmento.';
+            dashPrivacidad.textContent = data.privacidad || 'No especificado en el fragmento.';
+            dashDerechos.textContent = data.derechos_usuario || 'No especificado en el fragmento.';
+
+            // 4. Evidencias (Blockquotes)
+            evidenciasContainer.innerHTML = '';
+            const evidencias = Array.isArray(data.evidencias) ? data.evidencias : [];
+            
+            if (evidencias.length > 0) {
+                evidencias.forEach(ev => {
+                    const block = document.createElement('blockquote');
+                    block.className = "relative p-4 pl-5 border-l-4 border-brand-violet bg-dark-bg/60 rounded-r-xl text-gray-300 italic text-sm shadow-inner overflow-hidden group";
+                    block.innerHTML = `
+                        <div class="absolute inset-0 bg-gradient-to-r from-brand-violet/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <i data-lucide="quote" class="absolute top-2 left-2 w-8 h-8 text-white/5 -z-10 rotate-180"></i>
+                        <span class="relative z-10 leading-relaxed">"${escapeHTML(ev)}"</span>
+                    `;
+                    evidenciasContainer.appendChild(block);
+                });
+            } else {
+                evidenciasContainer.innerHTML = `<p class="text-sm text-gray-500 italic">No se extrajeron citas literales.</p>`;
+            }
+
+            // 5. Advertencias (Alert Panel)
+            advertenciasList.innerHTML = '';
+            const advertencias = Array.isArray(data.advertencias) ? data.advertencias : [];
+            
+            if (advertencias.length > 0) {
+                advertenciasPanel.classList.remove('hidden');
+                advertencias.forEach(adv => {
+                    const li = document.createElement('li');
+                    li.className = "flex gap-3 items-start bg-rose-500/5 p-3 rounded-lg border border-rose-500/10";
+                    li.innerHTML = `
+                        <i data-lucide="siren" class="w-5 h-5 text-rose-500 flex-shrink-0 mt-0.5"></i>
+                        <span class="leading-snug">${escapeHTML(adv)}</span>
+                    `;
+                    advertenciasList.appendChild(li);
+                });
+            } else {
+                advertenciasPanel.classList.add('hidden');
+            }
+
+            // 6. Asesoria Legal Flag
+            asesoriaStatus.textContent = data.asesoria_legal === false ? 'asesoria_legal: false' : 'verificar configuración';
+
+            // Re-initialize icons for newly added DOM elements
+            lucide.createIcons();
+
+            // Toggle Views
+            emptyState.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+        }
+
+        // Helper to prevent XSS if malicious JSON is injected
+        function escapeHTML(str) {
+            if(typeof str !== 'string') return '';
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+    </script>
+</body>
+</html>
