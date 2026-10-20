@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="Visor estructurado de fragmentos de términos y condiciones de aplicaciones y redes sociales.">
+  <title>ToS Lens | Visor de términos y condiciones</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="ToS Lens, inicio">
+      <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span class="brand-copy">
+        <strong>ToS Lens</strong>
+        <small>LECTOR DE TÉRMINOS Y CONDICIONES</small>
+      </span>
+    </a>
+    <div class="topbar-right">
+      <span class="privacy-note"><span class="privacy-dot"></span> Procesamiento local</span>
+      <button id="themeToggle" class="icon-button" type="button" aria-label="Cambiar tema" title="Cambiar tema">☾</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-line"></span> LECTURA ESTRUCTURADA</p>
+        <h1>Entiende lo que dicen<br><em>los términos.</em></h1>
+        <p class="hero-description">Convierte la salida JSON de tu sistema en una ficha clara sobre privacidad, derechos del usuario, evidencias y advertencias de fragmentos de términos y condiciones.</p>
+        <div class="hero-tags">
+          <span>01 / Privacidad</span><span>02 / Derechos</span><span>03 / Evidencias</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+        <div class="art-document">
+          <div class="art-doc-top"><span></span><span></span><span></span></div>
+          <div class="art-doc-line long"></div><div class="art-doc-line medium"></div>
+          <div class="art-doc-gap"></div>
+          <div class="art-doc-label">PRIVACIDAD</div>
+          <div class="art-doc-line long"></div><div class="art-doc-line short"></div>
+          <div class="art-doc-label second">DERECHOS DEL USUARIO</div>
+          <div class="art-doc-line medium"></div><div class="art-doc-line long"></div>
+          <div class="art-check">✓</div>
+        </div>
+        <div class="art-caption">FRAGMENTO <strong>→</strong> FICHA</div>
+      </div>
+    </section>
+
+    <section class="workflow-card" aria-labelledby="inputTitle">
+      <div class="workflow-heading">
+        <div class="step-number">01</div>
+        <div class="heading-copy">
+          <p class="eyebrow">ENTRADA</p>
+          <h2 id="inputTitle">Pega la respuesta del sistema</h2>
+          <p>Introduce únicamente el JSON generado por tu analizador.</p>
+        </div>
+        <span class="input-badge">JSON · INPUT</span>
+      </div>
+      <label class="sr-only" for="jsonInput">Contenido JSON</label>
+      <textarea id="jsonInput" spellcheck="false" placeholder='{"id_caso":"T01","estado":"respondido", ...}'></textarea>
+      <div id="errorBox" class="error-box" role="alert" hidden></div>
+      <div class="input-footer">
+        <div class="input-tools">
+          <button id="loadExample" class="button button-outline" type="button"><span aria-hidden="true">＋</span> Cargar ejemplo</button>
+          <button id="clearInput" class="button button-quiet" type="button">Limpiar</button>
+        </div>
+        <button id="processJson" class="button button-primary" type="button">Analizar respuesta <span aria-hidden="true">↗</span></button>
+      </div>
+      <p class="local-hint"><span aria-hidden="true">⌑</span> El JSON se procesa en este navegador. No se envía a un servidor.</p>
+    </section>
+
+    <section id="resultSection" class="result-section" aria-labelledby="resultTitle" hidden>
+      <div class="result-heading">
+        <div class="result-heading-title">
+          <div class="step-number">02</div>
+          <div>
+            <p class="eyebrow">SALIDA ESTRUCTURADA</p>
+            <h2 id="resultTitle">Ficha del fragmento</h2>
+            <p id="resultMeta" class="result-meta"></p>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button id="copyJson" class="button button-outline" type="button">Copiar JSON</button>
+          <button id="showRaw" class="button button-outline" type="button">{ } Ver JSON</button>
+        </div>
+      </div>
+      <div id="prettyJson" class="pretty-json" hidden><pre><code id="prettyCode"></code></pre></div>
+      <div id="visualResult" class="visual-result"></div>
+      <div class="method-note"><span class="method-icon">i</span><p><strong>Alcance del análisis.</strong> Esta herramienta organiza el contenido recibido. No verifica por sí sola la exactitud jurídica de las afirmaciones ni sustituye la lectura del documento original.</p></div>
+    </section>
+
+    <footer>
+      <div class="footer-brand"><span class="footer-mark">T</span><strong>ToS Lens</strong></div>
+      <p>Visor de evidencias textuales · Sin asesoría legal</p>
+    </footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
