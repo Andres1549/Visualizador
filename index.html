@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>Visor JSON | Analizador de documentos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">J</div>
+    <div>
+      <div class="brand-title">Visor JSON</div>
+      <div class="brand-subtitle">Convertidor de respuestas estructuradas</div>
+    </div>
+    <button id="themeToggle" class="button button-quiet top-theme" type="button" aria-label="Cambiar tema">☾ Tema</button>
+  </header>
+
+  <main class="layout">
+    <section class="intro">
+      <p class="eyebrow">HERRAMIENTA LOCAL</p>
+      <h1>De JSON a información legible.</h1>
+      <p class="intro-copy">Pega la respuesta de tu programa y conviértela en una ficha organizada con resumen, privacidad, derechos, evidencias y advertencias.</p>
+    </section>
+
+    <section class="panel input-panel" aria-labelledby="inputTitle">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">PASO 1</p>
+          <h2 id="inputTitle">Pega tu JSON</h2>
+        </div>
+        <span class="small-note">Se procesa en tu navegador</span>
+      </div>
+      <label class="sr-only" for="jsonInput">Contenido JSON</label>
+      <textarea id="jsonInput" spellcheck="false" placeholder='Pega aquí la respuesta JSON de tu programa…'></textarea>
+      <div id="errorBox" class="error-box" role="alert" hidden></div>
+      <div class="input-actions">
+        <div class="action-left">
+          <button id="loadExample" class="button button-secondary" type="button">Cargar ejemplo</button>
+          <button id="clearInput" class="button button-quiet" type="button">Limpiar</button>
+        </div>
+        <button id="processJson" class="button button-primary" type="button">Procesar JSON <span aria-hidden="true">→</span></button>
+      </div>
+    </section>
+
+    <section id="resultSection" class="result-section" aria-labelledby="resultTitle" hidden>
+      <div class="result-heading">
+        <div>
+          <p class="eyebrow">PASO 2</p>
+          <h2 id="resultTitle">Resultado organizado</h2>
+          <p id="resultMeta" class="small-note"></p>
+        </div>
+        <div class="result-actions">
+          <button id="copyJson" class="button button-secondary" type="button">Copiar JSON</button>
+          <button id="showRaw" class="button button-secondary" type="button">Ver JSON formateado</button>
+        </div>
+      </div>
+      <div id="prettyJson" class="pretty-json" hidden><pre><code id="prettyCode"></code></pre></div>
+      <div id="visualResult" class="visual-result"></div>
+    </section>
+
+    <footer>
+      <span>Visor JSON</span>
+      <span>Los datos no se envían a ningún servidor.</span>
+    </footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
